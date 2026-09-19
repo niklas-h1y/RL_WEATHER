@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI Live-Monitor</title>
+    <style>
+        body { background: #09090b; color: #fff; font-family: system-ui, sans-serif; padding: 20px; margin: 0; }
+        .card { background: #18181b; padding: 20px; border-radius: 12px; border: 1px solid #27272a; max-width: 400px; margin: 0 auto; }
+        h2 { margin-top: 0; color: #00ffcc; font-size: 1.4rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .val { font-size: 1.5rem; font-weight: bold; color: #00ffcc; font-family: monospace; }
+        .label { color: #a1a1aa; font-size: 0.85rem; text-transform: uppercase; }
+        .loading { text-align: center; color: #71717a; margin-top: 10px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Cloud-KI Live Wetter-Monitor</h2>
+    <div id="status" class="loading">Verbinde mit Server...</div>
+    
+    <div class="grid">
+        <div>
+            <div class="label">Trainingsschritte</div>
+            <div class="val" id="steps">--</div>
+        </div>
+        <div>
+            <div class="label">KI Score (RL)</div>
+            <div class="val" id="score" style="color: #ff0055;">--</div>
+        </div>
+        <div>
+            <div class="label">Reale Temp</div>
+            <div class="val" id="actual">--</div>
+        </div>
+        <div>
+            <div class="label">KI Vorhersage</div>
+            <div class="val" id="pred">--</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ERSETZE DIESE URL MIT DEINER KOSTENLOSEN URL VON RENDER.COM, SOBALD DEIN SERVER LÄUFT!
+    const SERVER_URL = 'http://localhost:3000'; 
+
+    async function updateDashboard() {
+        try {
+            const response = await fetch(SERVER_URL);
+            const data = await response.json();
+            
+            document.getElementById('steps').innerText = data.total_steps;
+            document.getElementById('score').innerText = data.score;
+            document.getElementById('actual').innerText = data.actual + "°C";
+            document.getElementById('pred').innerText = data.prediction + "°C";
+            document.getElementById('status').innerText = "● KI aktiv & lernt im Hintergrund";
+            document.getElementById('status').style.color = "#00ffcc";
+        } catch (e) {
+            document.getElementById('status').innerText = "Verbindung zum Server verloren...";
+            document.getElementById('status').style.color = "#ff0055";
+        }
+    }
+
+    // Alle 3 Sekunden die Daten vom Server abfragen
+    setInterval(updateDashboard, 3000);
+</script>
+
+</body>
+</html>
